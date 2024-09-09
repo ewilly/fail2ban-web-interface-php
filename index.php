@@ -1,92 +1,200 @@
 <?php
+  $constant='constant';
+  require_once('engine.inc.php');
 
- 
-require_once('engine.inc.php');
+  #####################
+  #      ACTIONS      #
+  #####################
+  if(isset($_POST['submit_reload'])) {
+    unset($_POST);
+    clearstatcache();
+    sleep(1);
+    header("Location: ".$_SERVER['REQUEST_URI']);
+  }
 
+  if(isset($_POST['submit_settings'])) {
+    header("Location: ".$_SERVER['PHP_SELF']."?usedns=".$_POST['usedns']."&jailnoempty=".$_POST['jailnoempty']."&jailinfo=".$_POST['jailinfo']);
+    unset($_POST);
+    clearstatcache();
+    sleep(1);
+  }
 
-if(isset($_POST['submit']))
-{ $error2=ban_ip($_POST['ban_jail'],$_POST['ban_ip']);
-  if($error2!='OK'){ if($error2=='nojailselected') { $error2='<font class="msg_er">'.$nojailselected.'</font>'; } if($error2=='novalidipaddress') { $error2='<font class="msg_er">'.$novalidipaddress.'</font>'; } if($error2=='couldnotbanthisip') { $error2='<font class="msg_er">'.$couldnotbanthisip.'</font>'; }}
-  else
-  { $error2='<font class="msg_ok">'.$ipsuccessfullybanned.'</font>';
-  	unset($_POST); clearstatcache(); sleep(1);
-} }
-
-if($_GET['j']!='' && $_GET['c']!='')
-{ $error1=unban_ip($_GET['j'],$_GET['c']);
- if($error1!='OK'){ $error1='<font class="msg_er">'.$error1.'</font>'; }
-  else
-  { $error1='<font class="msg_ok">'.$ipsuccessfullyunbanned.'</font>';
-  	unset($_GET); clearstatcache(); sleep(1);
-} }
-
-
- 
-$jails=list_jails();
-foreach($jails as $j=>$i){ $banned=list_banned($j); $jails[$j]=$banned; }
-?>
- <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<link rel="stylesheet" href="style.css" type="text/css" charset="utf-8">
-<title>Fail2Ban Webinterface</title>
-</head>
-<body>
-<h1>Fail2Ban Webinterface</h1></td>
-<button name="reload" onclick="location.href='<?=$_SERVER['PHP_SELF']?>';"><img src="images/reload.png" alt="add">&nbsp;<?php echo $Refresh; ?></button>
-
-
-<?php
-$erg2=@exec('sudo /usr/bin/fail2ban-client status');
- if($erg2==''){ echo '<h1><p class="msg_er">'.$serviceerror.'</p> </h1>'; exit; }
- ?> 
- 
-
-<h2><?php echo $BannedclientsperJail; ?></h2>
-<p><?=$error1?></p>
-<p><?=$error2?></p>
-
-<table>
-<?php
-foreach($jails as $j=>$cli)
-{ if($f2b['noempt']===false || is_array($cli))
-  { echo '<tr><td class="bold" colspan="2">'.strtoupper($j);
-    if($f2b['jainfo']===true)
-    { $inf=jail_info($j);
-      $inf=implode(', ',$inf);
-      echo ' <span class="msg_gr">'.$inf.'</span>';
-    }
-    echo '</td></tr>';
-    if(is_array($cli))
-    { foreach($cli as $i=>$c)
-      { $ip=strstr($c,'(',true);
-      	echo '<tr><td align="center">
-        <a href="'.$_SERVER['PHP_SELF'].'?j='.$j.'&c='.$ip.'"><img src="images/del.gif" alt="del" title="'.$UnbanIP.'"></a>
-        </td><td>'.$c.'</td></tr>';
+  if(isset($_POST['submit_add'])) {
+    $error_ban=ban_unban_ip("banip",$_POST['ban_jail'],$_POST['ban_ip']);
+    if($error_ban!='OK') {
+      if($error_ban=='nojailselected') {
+        $error_ban='<p class="msg_er">'.$nojailselected.'</p>';
       }
-    } else { echo '<tr><td colspan="2" class="msg_gr"><?php echo $nobannedclients; ?></td></tr>'; }
-} }
+      elseif($error_ban=='ipnotvalid') {
+        $error_ban='<p class="msg_er">'.$ipnotvalid.'</p>';
+      }
+      elseif($error_ban=='couldnot') {
+        $error_ban='<p class="msg_er">'.$couldnot.'</p>';
+      }
+    } else {
+      $error_ban='<p class="msg_ok">'.$ipsuccessfullybanned.'</p>';
+      unset($_POST);
+      clearstatcache();
+      sleep(1);
+    }
+  }
+
+  if(isset($_POST['submit_del'])) {
+    $error_unban=ban_unban_ip("unbanip",$_POST['unban_jail'],$_POST['unban_ip']);
+    if($error_unban!='OK') {
+      $error_unban='<p class="msg_er">'.$couldnot.'</p>';
+    } else {
+      $error_unban='<p class="msg_ok">'.$ipsuccessfullyunbanned.'</p>';
+      unset($_POST);
+      clearstatcache();
+      sleep(1);
+    }
+  }
 ?>
-</table>
-<br>
-<h2> <?php echo $ManuallyaddbannedclienttoJail; ?></h2>
-<form method="POST" action="<?=$_SERVER['PHP_SELF']?>">
-<table>
-<tr>
- <td>
-  <select name="ban_jail" size="1">
-  <option value="">- <?php echo $select; ?> -</option>
-  <?php foreach($jails as $j=>$cli){ echo '<option value="'.$j.'"'; if($_POST['ban_jail']==$j){ echo ' selected'; } echo '>'.$j.'</option>'; } ?>
-  </select>
- </td>
- <td><input type="text" name="ban_ip" size="18" value="<?=$_POST['ban_ip']?>"></td>
- <td><button type="submit" name="submit"><img src="images/add.gif" alt="add">&nbsp;<?php echo $BanIP; ?></button></td>
-</tr>
-</table>
-</form>
-<br>
-<?php echo date("r"); ?>
-<p class="msg_gr"><?php echo $version; ?>: <?=$f2b['version']?></p>
-</body>
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <title>Fail2Ban Webinterface</title>
+    <h1>Fail2Ban Webinterface</h1>
+    <form name="reload" method="POST">
+      <button class="button" type="submit" name="submit_reload"><?=$refresh?>
+        <img src="images/reload.svg" alt="add">
+      </button>
+    </form>
+  </head>
+  <body>
+    <?php
+      $erg2=@exec('sudo /usr/bin/fail2ban-client status');
+      if($erg2=='') {
+        echo '<h1><p class="msg_er">'.$serviceerror.'</p></h1>';
+        exit;
+      }
+    ?>
+    <h2><?=$bannedclientsperJail?></h2>
+    <?php
+      $usedns=$_GET['usedns'];
+      $jailnoempty=$_GET['jailnoempty'];
+      $jailinfo=$_GET['jailinfo'];
+      if($usedns==1) {
+        $usednsv="checked='checked'";
+      } else {
+        $usednsv=="";
+      }
+      if($jailnoempty==1) {
+        $jailnoemptyv="checked='checked'";
+      } else {
+        $jailnoemptyv=="";
+      }
+      if($jailinfo==1) {
+        $jailinfov="checked='checked'";
+      } else {
+        $jailinfov=="";
+      }
+    ?>
+    <form name="settings" method="post">
+      <table>
+        <tr>
+          <td align="right">
+            <label for="usedns"><?=$usedns_txt?></label>
+            <br><label for="jailnoempty"><?=$jailnoempty_txt?></label>
+            <br><label for="jailinfo"><?=$jailinfo_txt?></label>
+          </td>
+          <td>
+            <input type="checkbox" name="usedns" id="usedns" value="1" <?=$usednsv?>/>
+            <br><input type="checkbox" name="jailnoempty" id="jailnoempty" value="1" <?=$jailnoemptyv?>/>
+            <br><input type="checkbox" name="jailinfo" id="jailinfo" value="1" <?=$jailinfov?>/>
+          </td>
+          <td rowspan="3">
+            <button class="button" type="submit" name="submit_settings"><?=$apply ?>
+              <img src="images/apply.svg" alt="apply" title="<?=$apply ?>">
+            </button>
+          </td>
+        </tr>
+      </table>
+    </form>
+    <?=$error_unban==null?"&nbsp;":$error_unban?>
+    <?php
+      $jails=list_jails();
+      foreach($jails as $jail=>$client_banned) {
+        $clients_banned=list_clients_banned($jail,$usedns);
+        $jails[$jail]=$clients_banned;
+      }
+    ?>
+    <table>
+      <?php
+        foreach($jails as $jail=>$clients) {
+          if($jailnoempty==1 || is_array($clients)) {
+            echo '<thead><tr><td class="bold" colspan="2">'.strtoupper($jail);
+            if($jailinfo==1) {
+              $jail_info=jail_info($jail);
+              $jail_info=implode(', ',$jail_info);
+              echo '<span class="msg_gr"> >> '.$jail_info.'</span>';
+            }
+            echo '</td></tr></thead>';
+            if(is_array($clients)) {
+              foreach($clients as $client) {
+                $client_ip=explode(" (", $client)[0];
+                echo '
+                  <tr>
+                    <form name="unban" method="POST">
+                      <input type="hidden" name="unban_jail" value="'.$jail.'">
+                      <input type="hidden" name="unban_ip" value="'.$client_ip.'">
+                      <td align="right">'.$client.'</td>
+                      <td align="center">
+                        <button class="button" type="submit" name="submit_del">
+                          <img src="images/del.svg" alt="del" title="'.$unbanip.' '.$client_ip.'">
+                        </button>
+                      </td>
+                    </form>
+                  </tr>
+                ';
+              }
+            } else {
+              echo '<tr><td class="msg_gr" colspan="2">'.$nobannedclients.'</td></tr>';
+            }
+          }
+        }
+      ?>
+    </table>
+    <h2><?=$manuallyaddbannedclienttoJail?></h2>
+    <?=$error_ban==null?null:$error_ban?>
+    <form name="ban" method="POST">
+      <table>
+        <tr>
+          <th>Jail</th>
+          <th>IP</th>
+          <th><?=$banip?></th>
+        </tr>
+        <tr>
+          <td>
+            <select name="ban_jail"><option value="">- <?=$select?> -</option>
+              <?php
+                foreach($jails as $jail=>$clients) {
+                  echo '<option value="'.$jail.'"';
+                  if($_POST['ban_jail']==$jail) {
+                    echo ' selected';
+                  }
+                  echo '>'.$jail.'</option>';
+                }
+              ?>
+            </select>
+          </td>
+          <td><input type="text" name="ban_ip" value="<?=$_POST['ban_ip']?>"></td>
+          <td align="center">
+            <button class="button" type="submit" name="submit_add">
+              <img src="images/add.svg" alt="add" title="<?=$banip ?>">
+            </button>
+          </td>
+        </tr>
+      </table>
+    </form>
+    <br>
+  </body>
+  <footer>
+    <hr>
+    <?=date("r")?>
+  </footer>
 </html>

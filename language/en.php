@@ -1,31 +1,41 @@
 <?php
 
-$Refresh = "Refresh";
+  declare(strict_types=1);
 
-$BannedclientsperJail = "Banned clients per Jail";
+  $serviceerror = "Is fail2ban service active? Have you configured sudo?";
 
-$ManuallyaddbannedclienttoJail =  "Manually add banned client to Jail";
+  $aefresh = "Refresh";
 
-$select = "select";
+  $usedns_txt = "Show hostname of banned clients?";
 
-$BanIP =  "Ban IP";
+  $jailnoempty_txt = "Show Jails without banned client?";
 
-$nobannedclients = "no banned clients";
+  $jailinfo_txt = "Show Jail information in table headers?";
 
-$UnbanIP = "Unban IP";
+  $apply = "Apply";
 
-$nojailselected = "no jail selected";
+  $bannedclientsperJail = "Banned clients per Jail";
 
-$ipsuccessfullybanned = "ip successfully banned";
+  $manuallyaddbannedclienttoJail = "Manually add banned client to Jail";
 
-$ipsuccessfullyunbanned = "ip successfully unbanned";
+  $nobannedclients = "No banned client";
 
-$novalidipaddress = "no valid ip address";
+  $unknown = "unknown";
 
-$couldnotbanthisip = "could not ban this ip";
+  $unbanip = "Unban";
 
-$version = "Version";
+  $select = "Select";
 
-$serviceerror = "Is fail2ban service active? Have you configured sudo?";
+  $banip =  "Ban IP";
+
+  $ipsuccessfullybanned = "IP successfully banned";
+
+  $ipsuccessfullyunbanned = "IP successfully unbanned";
+
+  $nojailselected = "No jail selected";
+
+  $ipnotvalid = "Not a valid IP address";
+
+  $couldnot = "Could not ban/unban that IP";
 
 ?>
