@@ -7,6 +7,15 @@ h1, h2 {
   margin-bottom: 0px;
 }
 
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background-color: #aca;
+  padding-left: 10px;
+  padding-bottom: 10px;
+}
+
 footer {
   color : #666;
   font-style : italic;
@@ -28,12 +37,12 @@ td {
   padding-right : 5px;
 }
 
-td.bold {
+.bold {
   font-weight : bold;
   background-color : #aca;
 }
 
-tr:hover {
+.highlight:hover {
   background-color : #cac;
   opacity : 0.75;
 }

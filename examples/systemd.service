@@ -1,0 +1,14 @@
+[Unit]
+Description=Change access rights of fail2ban.sock
+Requires=fail2ban.service
+After=fail2ban.service
+
+[Service]
+Type=oneshot
+# Only root can fully execute chmod
+User=root
+Group=root
+ExecStart=/bin/chmod 660 /var/run/fail2ban/fail2ban.sock
+
+[Install]
+WantedBy=multi-user.target

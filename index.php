@@ -55,17 +55,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta meta name="viewport" content="width=device-width, initial-scale=1" charset="utf-8">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="style.css" type="text/css">
     <title>Fail2Ban Webinterface</title>
-    <h1>Fail2Ban Webinterface</h1>
-    <form name="reload" method="POST">
-      <button class="button" type="submit" name="submit_reload"><?=$refresh?>
-        <img src="images/reload.svg" alt="add">
-      </button>
-    </form>
-  </head>
-  <body>
+    <div class="header" id="myHeader">
+      <h1>Fail2Ban Webinterface</h1>
+      <form name="reload" method="POST">
+        <button class="button" type="submit" name="submit_reload"><?=$refresh?>
+          <img src="images/reload.svg" alt="add">
+        </button>
+      </form>
+    </div>
     <?php
       $erg2=@exec('sudo /usr/bin/fail2ban-client status');
       if($erg2=='') {
@@ -73,6 +74,8 @@
         exit;
       }
     ?>
+  </head>
+  <body>
     <h2><?=$bannedclientsperJail?></h2>
     <?php
       $usedns=$_GET['usedns'];
@@ -138,7 +141,7 @@
               foreach($clients as $client) {
                 $client_ip=explode(" (", $client)[0];
                 echo '
-                  <tr>
+                  <tr class="highlight">
                     <form name="unban" method="POST">
                       <input type="hidden" name="unban_jail" value="'.$jail.'">
                       <input type="hidden" name="unban_ip" value="'.$client_ip.'">
@@ -153,7 +156,7 @@
                 ';
               }
             } else {
-              echo '<tr><td class="msg_gr" colspan="2">'.$nobannedclients.'</td></tr>';
+              echo '<tr class="highlight"><td class="msg_gr" colspan="2">'.$nobannedclients.'</td></tr>';
             }
           }
         }
@@ -168,7 +171,7 @@
           <th>IP</th>
           <th><?=$banip?></th>
         </tr>
-        <tr>
+        <tr class="highlight">
           <td>
             <select name="ban_jail"><option value="">- <?=$select?> -</option>
               <?php
