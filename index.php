@@ -1,4 +1,7 @@
 <?php
+  # Tocheck if exec php function is enable, uncomment following lin and search for function listed in disable_functions directive
+  #phpinfo();
+
   $constant='constant';
   require_once('engine.inc.php');
 
@@ -68,8 +71,8 @@
       </form>
     </div>
     <?php
-      $erg2=@exec('sudo /usr/bin/fail2ban-client status');
-      if($erg2=='') {
+      $available=available();
+      if(!$available) {
         echo '<h1><p class="msg_er">'.$serviceerror.'</p></h1>';
         exit;
       }

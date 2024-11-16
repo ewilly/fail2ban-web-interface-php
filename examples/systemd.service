@@ -8,7 +8,7 @@ Type=oneshot
 # Only root can fully execute chmod
 User=root
 Group=root
-ExecStart=/bin/chmod 660 /var/run/fail2ban/fail2ban.sock
+ExecStart=__INSTALL_DIR__/fail2ban-web-start.sh
 
 [Install]
 WantedBy=multi-user.target

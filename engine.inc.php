@@ -1,5 +1,7 @@
 <?php
 
+  require_once('config.inc.php');
+
   #####################
   #     LANGUAGE      #
   #####################
@@ -14,10 +16,19 @@
   #    FUNCTIONS      #
   #####################
 
+  function available() {
+    $erg=@exec(SUDO.' '.F2BC.' status');
+    if($erg==''){
+        return false;
+      } else {
+        return true;
+      }
+  }
+
   function list_jails() {
     global $f2b;
     $jails=array();
-    $erg=@exec('sudo /usr/bin/fail2ban-client status | grep "Jail list:" | awk -F ":" \'{print $2}\' | awk \'{$1=$1;print}\'');
+    $erg=@exec(SUDO.' '.F2BC.' status | '.GREP.' "Jail list:" | '.AWK.' -F ":" \'{print $2}\' | '.AWK.' \'{$1=$1;print}\'');
     $erg=explode(",",$erg);
     foreach($erg as $jail) {
       $jails[trim($jail)]=false;
@@ -29,15 +40,15 @@
   function jail_info($jail) {
     global $f2b;
     $info=array();
-    $erg=@exec('sudo /usr/bin/fail2ban-client get '.escapeshellarg($jail).' findtime ');
+    $erg=@exec(SUDO.' '.F2BC.' get '.escapeshellarg($jail).' findtime ');
     if(is_numeric($erg)) {
       $info['findtime']='findtime: '.$erg;
     }
-    $erg=@exec('sudo /usr/bin/fail2ban-client get '.escapeshellarg($jail).' bantime ');
+    $erg=@exec(SUDO.' '.F2BC.' get '.escapeshellarg($jail).' bantime ');
     if(is_numeric($erg)) {
       $info['bantime']='bantime: '.$erg;
     }
-    $erg=@exec('sudo /usr/bin/fail2ban-client get '.escapeshellarg($jail).' maxretry ');
+    $erg=@exec(SUDO.' '.F2BC.' get '.escapeshellarg($jail).' maxretry ');
     if(is_numeric($erg)) {
       $info['maxretry']='maxretry: '.$erg;
     }
@@ -47,7 +58,7 @@
   function list_clients_banned($jail,$usedns) {
     global $f2b;
     $clients_banned=array();
-    $erg=@exec('sudo /usr/bin/fail2ban-client status '.$jail.' | grep "IP list:" | awk -F "list:" \'{print$2}\' | awk \'{$1=$1;print}\'');
+    $erg=@exec(SUDO.' '.F2BC.' status '.$jail.' | '.GREP.' "IP list:" | '.AWK.' -F "list:" \'{print$2}\' | '.AWK.' \'{$1=$1;print}\'');
     if($erg!='') {
       $clients_banned=explode(" ",$erg);
       if($usedns==1) {
@@ -72,7 +83,7 @@
     } elseif(!filter_var($ip,FILTER_VALIDATE_IP)) {
       return 'ipnotvalid';
     }
-    $erg=@exec('sudo /usr/bin/fail2ban-client set '.escapeshellarg($jail).' '.escapeshellarg($action).' '.escapeshellarg($ip));
+    $erg=@exec(SUDO.' '.F2BC.' set '.escapeshellarg($jail).' '.escapeshellarg($action).' '.escapeshellarg($ip));
     if($erg!=1) {
       return 'couldnot';
     }
