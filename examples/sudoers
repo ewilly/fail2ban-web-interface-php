@@ -1,2 +1,3 @@
 # Grant sudo permissions to the user to manage fail2ban-client
+__USER__ ALL=(ALL) !ALL
 __USER__ ALL=(ALL) NOPASSWD: /usr/bin/fail2ban-client
