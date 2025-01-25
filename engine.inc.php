@@ -9,7 +9,7 @@
   if(stream_resolve_include_path("language/$lang.php")) {
     include ("language/$lang.php");
   } else {
-    include ("language/fr.php");
+    include ("language/en.php");
   }
 
   #####################
