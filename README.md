@@ -1,4 +1,7 @@
-# Fail2Ban Web Interface PHP (f2bwiphp)
+<h1>
+  <img src="https://raw.githubusercontent.com/ewilly/fail2ban-web-interface-php/refs/heads/master/images/logo.svg" width="32px" alt="Logo of Fail2Ban Web Interface PHP (f2bwiphp)">
+  Fail2Ban Web Interface PHP (f2bwiphp)
+</h1>
 
 ## Overview
 
